@@ -9,8 +9,8 @@ from pygame.transform import scale
 class GameObject(Sprite):
     sprite_filename: str | None = None
     sprite_extension: str = "png"
-    width: int = 40
-    height: int = 40
+    width: int = 30
+    height: int = 30
     color_key: tuple[int, int, int] = (245, 245, 245)
     current_image: str | None = None
 

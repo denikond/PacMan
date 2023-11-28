@@ -5,6 +5,7 @@ from pygame.sprite import Group, spritecollide
 
 from game_object import GameObject, AnimatedGameObject
 from text import Text
+from field_map import field
 
 
 class Player(AnimatedGameObject):
@@ -16,13 +17,18 @@ class Player(AnimatedGameObject):
 
 class Wall(GameObject):
     sprite_filename = "wall"
-    current_image = "wall"
 
+class Meal(GameObject):
+    sprite_filename = "SmallDot"
 
+class Boost(GameObject):
+    sprite_filename = "BigDot"
+
+'''
 class Chest(GameObject):
     sprite_filename = "wall"
     current_image = "wall"
-
+'''
 
 def get_next_img_packman(current_image: str, direction: str) -> str:
     old_direct = current_image[7:]
@@ -37,8 +43,24 @@ def get_next_img_packman(current_image: str, direction: str) -> str:
 
 
 def calculate_walls_coordinates(screen_width, screen_height, wall_block_width, wall_block_height):
+    start_field = field
+
+    walls_coordinates, meal_coordinates, boost_coordinates = [], [], []
+
+    for line_counter, line in enumerate(field):
+        for element_counter, element in enumerate(line):
+            if element == '*':
+                meal_coordinates.extend([(element_counter*30,line_counter*30)])
+            elif element in ("q", "w", "a", "s", "|", "-"):
+                walls_coordinates.extend([(element_counter * 30, line_counter * 30)])
+            elif element == 'O':
+                boost_coordinates.extend([(element_counter * 30, line_counter * 30)])
+
+    return walls_coordinates, meal_coordinates, boost_coordinates
+'''
     horizontal_wall_blocks_amount = screen_width // wall_block_width
     vertical_wall_blocks_amount = screen_height // wall_block_height - 2
+
 
     walls_coordinates = []
     for block_num in range(horizontal_wall_blocks_amount):
@@ -51,31 +73,39 @@ def calculate_walls_coordinates(screen_width, screen_height, wall_block_width, w
             (0, block_num * wall_block_height),
             (screen_width - wall_block_width, block_num * wall_block_height),
         ])
+'''
 
-    return walls_coordinates
 
 
 def compose_context(screen):
-    walls_coordinates = calculate_walls_coordinates(screen.get_width(), screen.get_height(), Wall.width, Wall.height)
+    #walls_coordinates = calculate_walls_coordinates(screen.get_width(), screen.get_height(), Wall.width, Wall.height)
+    #walls_coordinates, meal_coordinates, boost_coordinates = calculate_walls_coordinates(screen.get_width(), screen.get_height(), Wall.width, Wall.height)
+    walls_coordinates, meal_coordinates, boost_coordinates = calculate_walls_coordinates(1024, 768, 30, 30)
     return {
-        "player": Player(screen.get_width() // 2, screen.get_height() // 2),
+        #"player": Player(screen.get_width() // 2, screen.get_height() // 2),
+        "player": Player(27*30//2,30*30//2),
         "walls": Group(*[Wall(x, y) for (x, y) in walls_coordinates]),
-        "score": 0,
-        "chest": Chest(100, 100),
+        "meals": Group(*[Meal(x, y) for (x, y) in meal_coordinates]),
+        "boost": Group(*[Boost(x, y) for (x, y) in boost_coordinates]),
+        #"score": 0,
+        #"chest": Chest(100, 100),
     }
 
 
 def draw_whole_screen(screen, context):
     screen.fill("black")
     context["player"].draw(screen)
+    context["meals"].draw(screen)
     context["walls"].draw(screen)
+    context["boost"].draw(screen)
+
     # context["chest"].draw(screen)
     # Text(str(context["score"]), (10, 10)).draw(screen)
 
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((840, 930))
     clock = pygame.time.Clock()
     running = True
     player_speed = 5
@@ -109,15 +139,11 @@ def main():
         if spritecollide(context["player"], context["walls"], dokill=False):
             context["player"].rect.topleft = old_player_topleft
 
-        if context["player"].is_collided_with(context["chest"]):
+        if context["player"].is_collided_with(context["meals"]):
             context["score"] += 1
-            context["chest"].rect.topleft = (
-                random.randint(Wall.width, screen.get_width() - Wall.width * 2),
-                random.randint(Wall.height, screen.get_height() - Wall.height * 2),
-            )
+
 
         clock.tick(18) / 1000
-
     pygame.quit()
 
 

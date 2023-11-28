@@ -6,23 +6,23 @@ from pygame.sprite import Group, spritecollide
 from game_object import GameObject, AnimatedGameObject
 from text import Text
 
-class Player(AnimatedGameObject):
-    sprite_filenames = ["PacMan_R1", "PacMan_R2", "PacMan_R3", "PacMan_R4", "PacMan_L1", "PacMan_L2", "PacMan_L3",\
-                        "PacMan_L4", "PacMan_U1", "PacMan_U2", "PacMan_U3", "PacMan_U4","PacMan_D1", "PacMan_D2",\
-                        "PacMan_D3", "PacMan_D4"]
-    width = 40
-    height = 40
-    current_image = "PacMan_R1"
 
+class Player(AnimatedGameObject):
+    sprite_filenames = ["PacMan_R1", "PacMan_R2", "PacMan_R3", "PacMan_R4", "PacMan_L1", "PacMan_L2", "PacMan_L3",
+                        "PacMan_L4", "PacMan_U1", "PacMan_U2", "PacMan_U3", "PacMan_U4", "PacMan_D1", "PacMan_D2",
+                        "PacMan_D3", "PacMan_D4"]
+    current_image = "PacMan_R1"
 
 
 class Wall(GameObject):
     sprite_filename = "wall"
     current_image = "wall"
 
+
 class Chest(GameObject):
     sprite_filename = "wall"
     current_image = "wall"
+
 
 def get_next_img_packman(current_image: str, direction: str) -> str:
     old_direct = current_image[7:]
@@ -34,6 +34,7 @@ def get_next_img_packman(current_image: str, direction: str) -> str:
     else:
         current_image = current_image[0:7] + str(direction[0:1]) + "1"
     return current_image
+
 
 def calculate_walls_coordinates(screen_width, screen_height, wall_block_width, wall_block_height):
     horizontal_wall_blocks_amount = screen_width // wall_block_width
@@ -68,8 +69,8 @@ def draw_whole_screen(screen, context):
     screen.fill("black")
     context["player"].draw(screen)
     context["walls"].draw(screen)
-    #context["chest"].draw(screen)
-    #Text(str(context["score"]), (10, 10)).draw(screen)
+    # context["chest"].draw(screen)
+    # Text(str(context["score"]), (10, 10)).draw(screen)
 
 
 def main():
@@ -118,6 +119,7 @@ def main():
         clock.tick(18) / 1000
 
     pygame.quit()
+
 
 if __name__ == '__main__':
     main()

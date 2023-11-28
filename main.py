@@ -3,24 +3,25 @@ import random
 import pygame
 from pygame.sprite import Group, spritecollide
 
-from game_object import GameObject
+from game_object import GameObject, AnimatedGameObject
 from text import Text
 
-class Player(GameObject):
+class Player(AnimatedGameObject):
     sprite_filenames = ["PacMan_R1", "PacMan_R2", "PacMan_R3", "PacMan_R4", "PacMan_L1", "PacMan_L2", "PacMan_L3",\
                         "PacMan_L4", "PacMan_U1", "PacMan_U2", "PacMan_U3", "PacMan_U4","PacMan_D1", "PacMan_D2",\
                         "PacMan_D3", "PacMan_D4"]
-    width = 20
-    height = 20
+    width = 40
+    height = 40
     current_image = "PacMan_R1"
 
 
+
 class Wall(GameObject):
-    sprite_filenames = ["wall"]
+    sprite_filename = "wall"
     current_image = "wall"
 
 class Chest(GameObject):
-    sprite_filenames = ["wall"]
+    sprite_filename = "wall"
     current_image = "wall"
 
 def get_next_img_packman(current_image: str, direction: str) -> str:
@@ -64,9 +65,9 @@ def compose_context(screen):
 
 
 def draw_whole_screen(screen, context):
-    screen.fill("purple")
+    screen.fill("black")
     context["player"].draw(screen)
-    #context["walls"].draw(screen)
+    context["walls"].draw(screen)
     #context["chest"].draw(screen)
     #Text(str(context["score"]), (10, 10)).draw(screen)
 
@@ -93,7 +94,7 @@ def main():
         old_player_topleft = context["player"].rect.topleft
         if keys[pygame.K_w]:
             context["player"].rect = context["player"].rect.move(0, -1 * player_speed)
-            context["player"].current_image = get_next_img_packman(context["player"].current_image,"Up")
+            context["player"].current_image = get_next_img_packman(context["player"].current_image, "Up")
         if keys[pygame.K_s]:
             context["player"].rect = context["player"].rect.move(0, player_speed)
             context["player"].current_image = get_next_img_packman(context["player"].current_image, "Down")

@@ -3,7 +3,7 @@ import random
 import pygame
 from pygame.sprite import Group, spritecollide
 
-from game_object import GameObject, AnimatedGameObject
+from game_object import GameObject, AnimatedGameObject, WallObject
 from text import Text
 from field_map import field
 
@@ -15,8 +15,8 @@ class Player(AnimatedGameObject):
     current_image = "PacMan_R1"
 
 
-class Wall(GameObject):
-    sprite_filename = "wall"
+class Wall(WallObject):
+    pass
 
 class Meal(GameObject):
     sprite_filename = "SmallDot"
@@ -52,7 +52,7 @@ def calculate_walls_coordinates(screen_width, screen_height, wall_block_width, w
             if element == '*':
                 meal_coordinates.extend([(element_counter*30,line_counter*30)])
             elif element in ("q", "w", "a", "s", "|", "-"):
-                walls_coordinates.extend([(element_counter * 30, line_counter * 30)])
+                walls_coordinates.extend([(element, element_counter * 30, line_counter * 30)])
             elif element == 'O':
                 boost_coordinates.extend([(element_counter * 30, line_counter * 30)])
 
@@ -84,10 +84,10 @@ def compose_context(screen):
     return {
         #"player": Player(screen.get_width() // 2, screen.get_height() // 2),
         "player": Player(27*30//2,30*30//2),
-        "walls": Group(*[Wall(x, y) for (x, y) in walls_coordinates]),
+        "walls": Group(*[Wall(el, x, y) for (el, x, y) in walls_coordinates]),
         "meals": Group(*[Meal(x, y) for (x, y) in meal_coordinates]),
         "boost": Group(*[Boost(x, y) for (x, y) in boost_coordinates]),
-        #"score": 0,
+        "score": 0,
         #"chest": Chest(100, 100),
     }
 
@@ -98,14 +98,12 @@ def draw_whole_screen(screen, context):
     context["meals"].draw(screen)
     context["walls"].draw(screen)
     context["boost"].draw(screen)
-
-    # context["chest"].draw(screen)
-    # Text(str(context["score"]), (10, 10)).draw(screen)
+    Text(str(context["score"]), (10, 930)).draw(screen)
 
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((840, 930))
+    screen = pygame.display.set_mode((840, 960))
     clock = pygame.time.Clock()
     running = True
     player_speed = 5
@@ -140,7 +138,10 @@ def main():
             context["player"].rect.topleft = old_player_topleft
 
         if context["player"].is_collided_with(context["meals"]):
-            context["score"] += 1
+            context["score"] += 10
+
+        if context["player"].is_collided_with(context["boost"]):
+            context["score"] += 50
 
 
         clock.tick(18) / 1000

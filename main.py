@@ -34,21 +34,7 @@ class Chest(GameObject):
 '''
 
 
-def get_next_img_packman(current_image: str, direction: str) -> str:
-    """
-    :param current_image: Can be PacMan_XY, where X direction movement, Y number of image
-    :param direction: Can be Up, Down, Right or Left
-    :return: Next image name in format PacMan_XY
-    """
-    old_direct = current_image[7:] #Get suffix after PacMan_
-    if old_direct[0:1] == direction[0:1]: #Check if direction unchanged
-        step = int(old_direct[1:]) + 1 #Direction same, change picture number to next
-        if step > 4: # only 4 images for each direction, if maximum reached
-            step = 1 # then reset number image to 1
-        current_image = current_image[0:8] + str(step) #generate next player picture name
-    else:
-        current_image = current_image[0:7] + str(direction[0:1]) + "1" #if direction change - genereta Pacman_XY with new X and Y=1
-    return current_image
+
 
 
 def calculate_walls_coordinates(screen_width, screen_height, wall_block_width, wall_block_height):
@@ -133,16 +119,16 @@ def main():
         old_player_topleft = context["player"].rect.topleft
         if keys[pygame.K_w]:
             context["player"].rect = context["player"].rect.move(0, -1 * player_speed)
-            context["player"].current_image = get_next_img_packman(context["player"].current_image, "Up")
+            context["player"].set_next_img_packman("Up")
         if keys[pygame.K_s]:
             context["player"].rect = context["player"].rect.move(0, player_speed)
-            context["player"].current_image = get_next_img_packman(context["player"].current_image, "Down")
+            context["player"].set_next_img_packman("Down")
         if keys[pygame.K_a]:
             context["player"].rect = context["player"].rect.move(-1 * player_speed, 0)
-            context["player"].current_image = get_next_img_packman(context["player"].current_image, "Left")
+            context["player"].set_next_img_packman("Left")
         if keys[pygame.K_d]:
             context["player"].rect = context["player"].rect.move(player_speed, 0)
-            context["player"].current_image = get_next_img_packman(context["player"].current_image, "Right")
+            context["player"].set_next_img_packman("Right")
 
         if spritecollide(context["player"], context["walls"], dokill=False):
             context["player"].rect.topleft = old_player_topleft

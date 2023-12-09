@@ -73,3 +73,17 @@ class AnimatedGameObject(GameObject):
                 another_object.remove(sprite)
                 return True
 
+    def set_next_img_packman(self, direction: str) -> str:
+        """
+        :param direction: Can be Up, Down, Right or Left
+        :return: Next image name in format PacMan_XY
+        current_image: Can be PacMan_XY, where X direction movement, Y number of image
+        """
+        old_direct = self.current_image[7:] #Get suffix after PacMan_
+        if old_direct[0:1] == direction[0:1]: #Check if direction unchanged
+            step = int(old_direct[1:]) + 1 #Direction same, change picture number to next
+            if step > 4: # only 4 images for each direction, if maximum reached
+                step = 1 # then reset number image to 1
+            self.current_image = self.current_image[0:8] + str(step) #generate next player picture name
+        else:
+            self.current_image = self.current_image[0:7] + str(direction[0:1]) + "1" #if direction change - genereta Pacman_XY with new X and Y=1

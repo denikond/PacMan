@@ -18,11 +18,14 @@ class Player(AnimatedGameObject):
 class Wall(WallObject):
     pass
 
+
 class Meal(GameObject):
     sprite_filename = "SmallDot"
 
+
 class Boost(GameObject):
     sprite_filename = "BigDot"
+
 
 '''
 class Chest(GameObject):
@@ -30,15 +33,21 @@ class Chest(GameObject):
     current_image = "wall"
 '''
 
+
 def get_next_img_packman(current_image: str, direction: str) -> str:
-    old_direct = current_image[7:]
-    if old_direct[0:1] == direction[0:1]:
-        step = int(old_direct[1:]) + 1
-        if step > 4:
-            step = 1
-        current_image = current_image[0:8] + str(step)
+    """
+    :param current_image: Can be PacMan_XY, where X direction movement, Y number of image
+    :param direction: Can be Up, Down, Right or Left
+    :return: Next image name in format PacMan_XY
+    """
+    old_direct = current_image[7:] #Get suffix after PacMan_
+    if old_direct[0:1] == direction[0:1]: #Check if direction unchanged
+        step = int(old_direct[1:]) + 1 #Direction same, change picture number to next
+        if step > 4: # only 4 images for each direction, if maximum reached
+            step = 1 # then reset number image to 1
+        current_image = current_image[0:8] + str(step) #generate next player picture name
     else:
-        current_image = current_image[0:7] + str(direction[0:1]) + "1"
+        current_image = current_image[0:7] + str(direction[0:1]) + "1" #if direction change - genereta Pacman_XY with new X and Y=1
     return current_image
 
 
@@ -50,13 +59,15 @@ def calculate_walls_coordinates(screen_width, screen_height, wall_block_width, w
     for line_counter, line in enumerate(field):
         for element_counter, element in enumerate(line):
             if element == '*':
-                meal_coordinates.extend([(element_counter*30,line_counter*30)])
+                meal_coordinates.extend([(element_counter * 30, line_counter * 30)])
             elif element in ("q", "w", "a", "s", "|", "-"):
                 walls_coordinates.extend([(element, element_counter * 30, line_counter * 30)])
             elif element == 'O':
                 boost_coordinates.extend([(element_counter * 30, line_counter * 30)])
 
     return walls_coordinates, meal_coordinates, boost_coordinates
+
+
 '''
     horizontal_wall_blocks_amount = screen_width // wall_block_width
     vertical_wall_blocks_amount = screen_height // wall_block_height - 2
@@ -76,19 +87,18 @@ def calculate_walls_coordinates(screen_width, screen_height, wall_block_width, w
 '''
 
 
-
 def compose_context(screen):
-    #walls_coordinates = calculate_walls_coordinates(screen.get_width(), screen.get_height(), Wall.width, Wall.height)
-    #walls_coordinates, meal_coordinates, boost_coordinates = calculate_walls_coordinates(screen.get_width(), screen.get_height(), Wall.width, Wall.height)
+    # walls_coordinates = calculate_walls_coordinates(screen.get_width(), screen.get_height(), Wall.width, Wall.height)
+    # walls_coordinates, meal_coordinates, boost_coordinates = calculate_walls_coordinates(screen.get_width(), screen.get_height(), Wall.width, Wall.height)
     walls_coordinates, meal_coordinates, boost_coordinates = calculate_walls_coordinates(1024, 768, 30, 30)
     return {
-        #"player": Player(screen.get_width() // 2, screen.get_height() // 2),
-        "player": Player(27*30//2,30*30//2),
+        # "player": Player(screen.get_width() // 2, screen.get_height() // 2),
+        "player": Player(27 * 30 // 2, 30 * 30 // 2),
         "walls": Group(*[Wall(el, x, y) for (el, x, y) in walls_coordinates]),
         "meals": Group(*[Meal(x, y) for (x, y) in meal_coordinates]),
         "boost": Group(*[Boost(x, y) for (x, y) in boost_coordinates]),
         "score": 0,
-        #"chest": Chest(100, 100),
+        # "chest": Chest(100, 100),
     }
 
 
@@ -142,7 +152,6 @@ def main():
 
         if context["player"].is_collided_with(context["boost"]):
             context["score"] += 50
-
 
         clock.tick(18) / 1000
     pygame.quit()
